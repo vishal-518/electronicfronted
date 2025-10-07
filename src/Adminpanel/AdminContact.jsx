@@ -6,7 +6,7 @@ function AdminContact() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    axios.get('http://localhost:5000/contactapi')
+    axios.get('https://electronicbackend-euwf.onrender.com/contactapi')
       .then((res) => {
         setContactApi(res.data.contact || [])
         setLoading(false)

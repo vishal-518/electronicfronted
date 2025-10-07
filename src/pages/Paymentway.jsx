@@ -74,7 +74,7 @@ const Paymentway = () => {
       setPincodeStatus("error");
       return;
     }
-    axios.post("http://localhost:5000/check-pincode", { pincode }).then((res) => {
+    axios.post("https://electronicbackend-euwf.onrender.com/check-pincode", { pincode }).then((res) => {
       if (res.data.status === 200) {
         setDeliveryInfo(res.data);
         setIsPincodeValid(true);
@@ -109,7 +109,7 @@ const Paymentway = () => {
     const token = localStorage.getItem("token");
 
     if (paymentMethod === "cash on delivery") {
-      await axios.post("http://localhost:5000/order",
+      await axios.post("https://electronicbackend-euwf.onrender.com/order",
         { ...formData, products: productdata, totalAmount: formData.totalAmount, paymentMethod },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -137,7 +137,7 @@ const Paymentway = () => {
 };
 
 async function startOnlinePayment(latitude, longitude, token) {
-  const orderRes = await axios.post("http://localhost:5000/order",
+  const orderRes = await axios.post("https://electronicbackend-euwf.onrender.com/order",
     {
       ...formData,
       products: productdata,
@@ -150,7 +150,7 @@ async function startOnlinePayment(latitude, longitude, token) {
   );
 
   const { data } = await axios.post(
-    "http://localhost:5000/create-order",
+    "https://electronicbackend-euwf.onrender.com/create-order",
     { amount: formData.totalAmount, currency: "INR" },
     { headers: { "Content-Type": "application/json" } }
   );
@@ -171,7 +171,7 @@ async function startOnlinePayment(latitude, longitude, token) {
     handler: async function (response) {
       try {
         const verifyRes = await axios.post(
-          "http://localhost:5000/verify-payment",
+          "https://electronicbackend-euwf.onrender.com/verify-payment",
           {
             razorpay_order_id: response.razorpay_order_id,
             razorpay_payment_id: response.razorpay_payment_id,

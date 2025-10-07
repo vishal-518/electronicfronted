@@ -12,7 +12,7 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("http://localhost:5000/productapi")
+    axios.get("https://electronicbackend-euwf.onrender.com/productapi")
       .then((res) => setProductapi(res.data.productdata))
       .catch((err) => console.error(err));
   }, []);

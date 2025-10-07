@@ -39,7 +39,7 @@ export default function FlashSalesPage() {
 
 
     useEffect(() => {
-        axios.get("http://localhost:5000/productapi", { headers: { Authorization: `Bearer ${token}` } })
+        axios.get("https://electronicbackend-euwf.onrender.com/productapi", { headers: { Authorization: `Bearer ${token}` } })
             .then((res) => setProductApi(res.data.productdata))
             .catch((err) => console.error(err));
     }, [token]);
@@ -47,10 +47,10 @@ export default function FlashSalesPage() {
 
     const handleAddToCart = (product) => {
         let token = localStorage.getItem('token')
-        axios.get(`http://localhost:5000/product/${product._id}`, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
+        axios.get(`https://electronicbackend-euwf.onrender.com/product/${product._id}`, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
             const productWithDelivery = { ...product, delivery: res.data.delivery };
             console.log(productWithDelivery)
-            axios.post("http://localhost:5000/addtocart", productWithDelivery, { headers: { Authorization: `Bearer ${token}` } })
+            axios.post("https://electronicbackend-euwf.onrender.com/addtocart", productWithDelivery, { headers: { Authorization: `Bearer ${token}` } })
                 .then((res) => {
                     if (res.data.status === 200) {
                         toast.success(res.data.msg);
@@ -81,7 +81,7 @@ export default function FlashSalesPage() {
                 navigate("/product", { state: product });
 
         // let token = localStorage.getItem('token');
-        // axios.get(`http://localhost:5000/product/${product._id}`)
+        // axios.get(`https://electronicbackend-euwf.onrender.com/product/${product._id}`)
         //     .then((res) => {
         //         navigate("/product", { state: product });
         //     });

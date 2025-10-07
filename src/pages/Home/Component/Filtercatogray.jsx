@@ -17,7 +17,7 @@ function Filtercatogray() {
   const [allProducts, setAllProducts] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/productapi")
+    axios.get("https://electronicbackend-euwf.onrender.com/productapi")
       .then((res) => {
         const data = res.data.productdata || res.data;
         setProducts(data);
@@ -107,7 +107,7 @@ function Filtercatogray() {
     let token = localStorage.getItem('token')
     const productWithDelivery = { ...product, delivery: product.delivery || 0 };
     axios
-      .post("http://localhost:5000/addtocart", productWithDelivery, { headers: { Authorization: `Bearer ${token}` } })
+      .post("https://electronicbackend-euwf.onrender.com/addtocart", productWithDelivery, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => {
         if (res.data.status === 200) {
           toast.success(res.data.msg);
@@ -124,7 +124,7 @@ function Filtercatogray() {
       toast.error("Please login first");
       return;
     }
-    axios.get(`http://localhost:5000/product/${product._id}`, { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(`https://electronicbackend-euwf.onrender.com/product/${product._id}`, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => {
         navigate("/product", { state: { ...product, delivery: res.data.delivery } });
       });

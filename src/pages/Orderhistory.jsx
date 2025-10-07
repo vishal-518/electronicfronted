@@ -15,7 +15,7 @@ function Orderhistory() {
     useEffect(() => {
         const token = localStorage.getItem('token');
         axios
-            .get('http://localhost:5000/orderapi', { headers: { Authorization: `Bearer ${token}` } })
+            .get('https://electronicbackend-euwf.onrender.com/orderapi', { headers: { Authorization: `Bearer ${token}` } })
             .then((res) => setOrderdata(res.data.ordata))
             .catch((err) => console.error(err));
     }, []);
@@ -61,7 +61,7 @@ function Orderhistory() {
 
     const OrderCancel = (id) => {
         const token = localStorage.getItem('token');
-        axios.post('http://localhost:5000/order-cencel', { id }, { headers: { Authorization: `Bearer ${token}` } })
+        axios.post('https://electronicbackend-euwf.onrender.com/order-cencel', { id }, { headers: { Authorization: `Bearer ${token}` } })
             .then((res) => {
                 toast.success(res.data.msg);
                 setTimeout(() => window.location.reload(), 1000);
@@ -82,7 +82,7 @@ function Orderhistory() {
 
         try {
             const res = await axios.put(
-                `http://localhost:5000/return/${selectedOrder._id}`,
+                `https://electronicbackend-euwf.onrender.com/return/${selectedOrder._id}`,
                 reason === "other" ? { reason: "other", extraReason: extraText } : { reason },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

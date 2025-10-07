@@ -20,7 +20,7 @@ export default function CartPage() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     axios
-      .get("http://localhost:5000/cartapi", {
+      .get("https://electronicbackend-euwf.onrender.com/cartapi", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
@@ -40,7 +40,7 @@ export default function CartPage() {
   const handleRemoveItem = (item) => {
     const token = localStorage.getItem("token");
     axios
-      .post("http://localhost:5000/removecart", item, {
+      .post("https://electronicbackend-euwf.onrender.com/removecart", item, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
