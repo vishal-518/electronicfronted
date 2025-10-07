@@ -45,7 +45,7 @@ function AddProduct() {
     //   console.error(err);
     //   toast.error("Something went wrong! Check backend.");
     // }
-     const res = await axios.post("https://electronicbackend-euwf.onrender.com/addproduct", product);
+     const res = await axios.post("https://electronicbackend-vtjh.onrender.com/addproduct", product);
         toast.success(res.data.msg);
 
         setProduct({

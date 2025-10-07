@@ -17,7 +17,7 @@ export default function Contact() {
     let handlecontact = (e) => {
         e.preventDefault()
         let token = localStorage.getItem('token')
-        axios.post('https://electronicbackend-euwf.onrender.com/contact', inputvalue, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
+        axios.post('https://electronicbackend-vtjh.onrender.com/contact', inputvalue, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
             toast.success(res.data.msg)
         })
     }

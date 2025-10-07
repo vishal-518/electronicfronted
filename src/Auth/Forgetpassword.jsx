@@ -19,7 +19,7 @@ function ForgetPassword() {
     const handleSendOtp = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post('https://electronicbackend-euwf.onrender.com/forgot-password', { email: inputData.email });
+            const res = await axios.post('https://electronicbackend-vtjh.onrender.com/forgot-password', { email: inputData.email });
             setMessage(res.data.msg);
             setStep(2);
         } catch (err) {
@@ -30,7 +30,7 @@ function ForgetPassword() {
     const handleVerifyOtp = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post('https://electronicbackend-euwf.onrender.com/verify-otp', {
+            const res = await axios.post('https://electronicbackend-vtjh.onrender.com/verify-otp', {
                 email: inputData.email,
                 otp: inputData.otp
             });
@@ -49,7 +49,7 @@ function ForgetPassword() {
             return;
         }
         try {
-            const res = await axios.post('https://electronicbackend-euwf.onrender.com/reset-password', {
+            const res = await axios.post('https://electronicbackend-vtjh.onrender.com/reset-password', {
                 email: inputData.email,
                 otp: inputData.otp,
                 newPassword: inputData.newPassword

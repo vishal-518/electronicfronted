@@ -46,7 +46,7 @@ export default function Signup() {
     //   }
     // );
       try {
-          const { data } = await axios.post("https://electronicbackend-euwf.onrender.com/signup", formData);
+          const { data } = await axios.post("https://electronicbackend-vtjh.onrender.com/signup", formData);
           if (data.status === 200 || data.msg === "OTP sent") {
             setMessage("OTP sent to your email.");
             setOtpSent(true);
@@ -67,7 +67,7 @@ export default function Signup() {
     }
 
     try {
-      const { data } = await axios.post("https://electronicbackend-euwf.onrender.com/verify-otp", {
+      const { data } = await axios.post("https://electronicbackend-vtjh.onrender.com/verify-otp", {
         email: formData.email,
         otp,
       });
@@ -91,7 +91,7 @@ export default function Signup() {
     if (!validate()) return;
 
     try {
-      const { data } = await axios.post("https://electronicbackend-euwf.onrender.com/login", formData);
+      const { data } = await axios.post("https://electronicbackend-vtjh.onrender.com/login", formData);
       if (data.status === 200) {
         localStorage.setItem("token", data.usertoken);
         localStorage.setItem("user", JSON.stringify(data.exitsuser));
@@ -113,7 +113,7 @@ export default function Signup() {
 
   const handleGoogleLogin = async (credentialResponse) => {
     try {
-      const { data } = await axios.post("https://electronicbackend-euwf.onrender.com/auth/google", {
+      const { data } = await axios.post("https://electronicbackend-vtjh.onrender.com/auth/google", {
         credential: credentialResponse.credential
       });
 

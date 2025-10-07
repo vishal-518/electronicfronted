@@ -27,7 +27,7 @@ const Header = () => {
     if (!token) return;
 
     axios
-      .get("https://electronicbackend-euwf.onrender.com/cartapi", { headers: { Authorization: `Bearer ${token}` } })
+      .get("https://electronicbackend-vtjh.onrender.com/cartapi", { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => setCartData(res.data.cartapidata))
       .catch(() => toast.error("Failed to fetch cart data"));
   }, []);
@@ -37,7 +37,7 @@ const Header = () => {
     if (!token) return;
 
     axios
-      .get("https://electronicbackend-euwf.onrender.com/profile", { headers: { Authorization: `Bearer ${token}` } })
+      .get("https://electronicbackend-vtjh.onrender.com/profile", { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => setProfile(res.data.userprofile))
       .catch(() => toast.error("Failed to fetch profile"));
   }, []);
@@ -45,7 +45,7 @@ const Header = () => {
 
   useEffect(() => {
     axios
-      .get("https://electronicbackend-euwf.onrender.com/productapi")
+      .get("https://electronicbackend-vtjh.onrender.com/productapi")
       .then((res) => setProducts(res.data.productdata || res.data))
       .catch(() => toast.error("Failed to fetch products"));
   }, []);
@@ -65,7 +65,7 @@ const Header = () => {
       if (!token) throw new Error("User not logged in");
 
       await axios.post(
-        "https://electronicbackend-euwf.onrender.com/logout",
+        "https://electronicbackend-vtjh.onrender.com/logout",
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

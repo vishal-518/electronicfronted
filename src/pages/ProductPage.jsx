@@ -66,7 +66,7 @@ export default function ProductPage() {
     let handleAddToCart = (data) => {
         let token = localStorage.getItem("token");
         axios
-            .post("https://electronicbackend-euwf.onrender.com/addtocart", data, {
+            .post("https://electronicbackend-vtjh.onrender.com/addtocart", data, {
                 headers: { Authorization: `Bearer ${token}` },
             })
             .then((res) => {

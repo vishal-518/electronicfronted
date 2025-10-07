@@ -22,7 +22,7 @@ const BestSellingProducts = () => {
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
-        axios.get("https://electronicbackend-euwf.onrender.com/productapi")
+        axios.get("https://electronicbackend-vtjh.onrender.com/productapi")
             .then((res) => {
                 const data = res.data.productdata || res.data;
                 setProducts(data);
@@ -34,7 +34,7 @@ const BestSellingProducts = () => {
         let token = localStorage.getItem('token')
         const productWithDelivery = { ...product, delivery: product.delivery || 0 };
         axios
-            .post("https://electronicbackend-euwf.onrender.com/addtocart", productWithDelivery, { headers: { Authorization: `Bearer ${token}` } })
+            .post("https://electronicbackend-vtjh.onrender.com/addtocart", productWithDelivery, { headers: { Authorization: `Bearer ${token}` } })
             .then((res) => {
                 if (res.data.status === 200) {
                     toast.success(res.data.msg);
@@ -67,7 +67,7 @@ const BestSellingProducts = () => {
         //     toast.error("Please login first");
         //     return;
         // }
-        axios.get(`https://electronicbackend-euwf.onrender.com/product/${product._id}`)
+        axios.get(`https://electronicbackend-vtjh.onrender.com/product/${product._id}`)
             .then((res) => {
                 navigate("/product", { state:product });
             });
