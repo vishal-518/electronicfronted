@@ -5,7 +5,8 @@ import * as Yup from "yup";
 
 const Paymentway = () => {
   const location = useLocation();
-  const [productdata] = useState(location.state || []);
+  // const [productdata] = useState(location.state || []);
+  const { state } = location || {};
   const [pincode, setPincode] = useState("");
   const [deliveryInfo, setDeliveryInfo] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("online");
@@ -14,8 +15,8 @@ const Paymentway = () => {
   const [pincodeMsg, setPincodeMsg] = useState("");
   const [pincodeStatus, setPincodeStatus] = useState("");
   const navigate = useNavigate();
-  console.log(productdata)
  
+
 
   const [formData, setFormData] = useState({
     fname: "",
@@ -27,7 +28,15 @@ const Paymentway = () => {
     city: "",
     state: "",
     pincode: "",
-    totalAmount: productdata.reduce((a, b) => a + b.product_price * b.quantity, 0) + (productdata[0].delivery?.deliveryCharge || 0),
+    // totalAmount: state.reduce((a, b) => a + b.product_price * b.quantity, 0)
+    totalAmount:
+  state?.type === "buy"
+    ? state.data?.product_price * (state.data?.quantity || 1)
+    : Array.isArray(state?.data)
+    ? state.data.reduce((a, b) => a + b.product_price * b.quantity, 0)
+    : 0
+
+
   });
 
 
@@ -94,107 +103,107 @@ const Paymentway = () => {
       });
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  if (!isPincodeValid) {
-    setPincodeMsg("Please enter a valid pincode before proceeding!");
-    setPincodeStatus("error");
-    return;
-  }
-
-  try {
-    await validationSchema.validate(formData, { abortEarly: false });
-    setErrors({});
-    const token = localStorage.getItem("token");
-
-    if (paymentMethod === "cash on delivery") {
-      await axios.post("https://electronicbackend-vtjh.onrender.com/order",
-        { ...formData, products: productdata, totalAmount: formData.totalAmount, paymentMethod },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      navigate("/ordersuccess");
+    if (!isPincodeValid) {
+      setPincodeMsg("Please enter a valid pincode before proceeding!");
+      setPincodeStatus("error");
       return;
     }
 
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        await startOnlinePayment(pos.coords.latitude, pos.coords.longitude, token);
-      },
-      async (err) => {
-        console.log("Geo error", err);
-        await startOnlinePayment(null, null, token);
-      }
-    );
+    try {
+      await validationSchema.validate(formData, { abortEarly: false });
+      setErrors({});
+      const token = localStorage.getItem("token");
 
-  } catch (validationError) {
-    const formattedErrors = {};
-    validationError.inner?.forEach((err) => {
-      formattedErrors[err.path] = err.message;
-    });
-    setErrors(formattedErrors);
-  }
-};
-
-async function startOnlinePayment(latitude, longitude, token) {
-  const orderRes = await axios.post("https://electronicbackend-vtjh.onrender.com/order",
-    {
-      ...formData,
-      products: productdata,
-      totalAmount: formData.totalAmount,
-      paymentMethod,
-      latitude,
-      longitude
-    },
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-
-  const { data } = await axios.post(
-    "https://electronicbackend-vtjh.onrender.com/create-order",
-    { amount: formData.totalAmount, currency: "INR" },
-    { headers: { "Content-Type": "application/json" } }
-  );
-
-  const options = {
-    key: data.key_id,
-    amount: data.order_amount,
-    currency: data.currency,
-    name: "Pixel Genix",
-    order_id: data.order_id,
-    description: "Payment via Razorpay",
-    prefill: {
-      name: `${formData.fname} ${formData.lname}`,
-      email: formData.email,
-      contact: formData.mobile,
-    },
-    theme: { color: "#07a291db" },
-    handler: async function (response) {
-      try {
-        const verifyRes = await axios.post(
-          "https://electronicbackend-vtjh.onrender.com/verify-payment",
-          {
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_signature: response.razorpay_signature,
-          }
+      if (paymentMethod === "cash on delivery") {
+        await axios.post("https://electronicbackend-vtjh.onrender.com/order",
+          { ...formData, products: productdata, totalAmount: formData.totalAmount, paymentMethod },
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-
-        if (verifyRes.data.success) {
-          navigate("/ordersuccess");
-        } else {
-          setPincodeMsg("Payment Verification Failed");
-          setPincodeStatus("error");
-        }
-      } catch {
-        setPincodeMsg("Error verifying payment");
-        setPincodeStatus("error");
+        navigate("/ordersuccess");
+        return;
       }
-    },
+
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          await startOnlinePayment(pos.coords.latitude, pos.coords.longitude, token);
+        },
+        async (err) => {
+          console.log("Geo error", err);
+          await startOnlinePayment(null, null, token);
+        }
+      );
+
+    } catch (validationError) {
+      const formattedErrors = {};
+      validationError.inner?.forEach((err) => {
+        formattedErrors[err.path] = err.message;
+      });
+      setErrors(formattedErrors);
+    }
   };
 
-  const rzp = new window.Razorpay(options);
-  rzp.open();
-}
+  async function startOnlinePayment(latitude, longitude, token) {
+    const orderRes = await axios.post("https://electronicbackend-vtjh.onrender.com/order",
+      {
+        ...formData,
+        products: productdata,
+        totalAmount: formData.totalAmount,
+        paymentMethod,
+        latitude,
+        longitude
+      },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    const { data } = await axios.post(
+      "https://electronicbackend-vtjh.onrender.com/create-order",
+      { amount: formData.totalAmount, currency: "INR" },
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    const options = {
+      key: data.key_id,
+      amount: data.order_amount,
+      currency: data.currency,
+      name: "Pixel Genix",
+      order_id: data.order_id,
+      description: "Payment via Razorpay",
+      prefill: {
+        name: `${formData.fname} ${formData.lname}`,
+        email: formData.email,
+        contact: formData.mobile,
+      },
+      theme: { color: "#07a291db" },
+      handler: async function (response) {
+        try {
+          const verifyRes = await axios.post(
+            "https://electronicbackend-vtjh.onrender.com/verify-payment",
+            {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            }
+          );
+
+          if (verifyRes.data.success) {
+            navigate("/ordersuccess");
+          } else {
+            setPincodeMsg("Payment Verification Failed");
+            setPincodeStatus("error");
+          }
+        } catch {
+          setPincodeMsg("Error verifying payment");
+          setPincodeStatus("error");
+        }
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  }
 
 
 
@@ -402,18 +411,62 @@ async function startOnlinePayment(latitude, longitude, token) {
       <div className="bg-white shadow-2xl rounded-3xl p-6 w-full md:w-1/3 h-[560px] overflow-x-auto">
         <h2 className="text-xl font-bold mb-4 text-gray-800">Order Summary</h2>
         <div className="space-y-3">
-          {productdata.map((item, index) => (
+          {/* {state?.type === "buy" ? (
             <div
               key={index}
               className="flex justify-between items-center border-b pb-2"
             >
               <div className="flex items-center">
-                <img src={item.product_img} className="w-14 h-14 shadow-2xl" alt="" />
-                <p>{item.product_name} x {item.quantity}</p>
+                <img src={state?.item.product_img} className="w-14 h-14 shadow-2xl" alt="" />
+                <p>{state?.item.product_name} x {state?.item.quantity}</p>
               </div>
-              <p>₹{item.product_price * item.quantity}</p>
+              <p>₹{state?.item.product_price * state?.item.quantity}</p>
             </div>
-          ))}
+          ) : state?.type === "cart" ? (
+            <p className="text-gray-500">
+              {state.map((item, index) => {
+                return (
+                  <>
+                    <div
+                      key={index}
+                      className="flex justify-between items-center border-b pb-2"
+                    >
+                      <div className="flex items-center">
+                        <img src={state?.item.product_img} className="w-14 h-14 shadow-2xl" alt="" />
+                        <p>{state?.item.product_name} x {state?.item.quantity}</p>
+                      </div>
+                      <p>₹{state?.item.product_price * state?.item.quantity}</p>
+                    </div>
+                  </>
+                )
+              })}
+            </p>
+          ) : (
+            <p className="text-gray-400">No Items Found</p>
+          )
+          } */}
+          {state?.type === "buy" ? (
+  <div className="flex justify-between items-center border-b pb-2">
+    <div className="flex items-center">
+      <img src={state?.data?.product_img} className="w-14 h-14 shadow-2xl" alt="" />
+      <p>{state?.data?.product_name} x {state?.data?.quantity}</p>
+    </div>
+    <p>₹{state?.data?.product_price * (state?.data?.quantity || 1)}</p>
+  </div>
+) : state?.type === "cart" ? (
+  state?.data?.map((item, index) => (
+    <div key={index} className="flex justify-between items-center border-b pb-2">
+      <div className="flex items-center">
+        <img src={item.product_img} className="w-14 h-14 shadow-2xl" alt="" />
+        <p>{item.product_name} x {item.quantity}</p>
+      </div>
+      <p>₹{item.product_price * item.quantity}</p>
+    </div>
+  ))
+) : (
+  <p className="text-gray-400">No Items Found</p>
+)}
+
         </div>
         <div className="mt-4 font-bold text-lg">
           Total: ₹{formData.totalAmount}

@@ -68,17 +68,16 @@ const ExploreMoreProduct = () => {
     };
 
     let navigate = useNavigate()
-    let datial = (product) => {
-        let token = localStorage.getItem('token');
-        if (!token) {
-            toast.error("Please login first");
-            return;
-        }
-        axios.get(`https://electronicbackend-vtjh.onrender.com/product/${product._id}`, { headers: { Authorization: `Bearer ${token}` } })
-            .then((res) => {
-                navigate("/product", { state: { ...product, delivery: res.data.delivery } });
-            });
-    }
+     const datial = (product) => {
+        console.log(product)
+                navigate("/product", { state: product });
+
+        // let token = localStorage.getItem('token');
+        // axios.get(`https://electronicbackend-vtjh.onrender.com/product/${product._id}`)
+        //     .then((res) => {
+        //         navigate("/product", { state: product });
+        //     });
+    };
     return (
         <div className="md:p-6 ">
             <Toaster position="top-right" reverseOrder={false} />

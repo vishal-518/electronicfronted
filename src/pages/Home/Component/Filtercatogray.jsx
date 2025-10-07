@@ -118,17 +118,16 @@ function Filtercatogray() {
       });
   };
 
-  const goToDetail = (product) => {
-    let token = localStorage.getItem('token');
-    if (!token) {
-      toast.error("Please login first");
-      return;
-    }
-    axios.get(`https://electronicbackend-vtjh.onrender.com/product/${product._id}`, { headers: { Authorization: `Bearer ${token}` } })
-      .then((res) => {
-        navigate("/product", { state: { ...product, delivery: res.data.delivery } });
-      });
-  };
+   const datial = (product) => {
+        console.log(product)
+                navigate("/product", { state: product });
+
+        // let token = localStorage.getItem('token');
+        // axios.get(`https://electronicbackend-vtjh.onrender.com/product/${product._id}`)
+        //     .then((res) => {
+        //         navigate("/product", { state: product });
+        //     });
+    };
 
   const [openSections, setOpenSections] = useState({});
   const toggleSection = (name) => setOpenSections(prev => ({ ...prev, [name]: !prev[name] }));
@@ -234,7 +233,7 @@ function Filtercatogray() {
             <img
               src={prod.product_img}
               alt={prod.product_name}
-              onClick={() => goToDetail(prod)}
+              onClick={() => datial(prod)}
               className="w-32 h-32 mt-4 rounded-sm transform transition duration-500 md:hover:scale-110 md:hover:-translate-y-0.5 cursor-pointer"
             />
             <h3 className="font-semibold mt-2 text-center">{prod.product_name}</h3>

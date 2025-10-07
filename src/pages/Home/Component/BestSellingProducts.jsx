@@ -61,17 +61,16 @@ const BestSellingProducts = () => {
         );
     };
     let navigate = useNavigate()
-    let datial = (product) => {
+     const datial = (product) => {
+        console.log(product)
+                navigate("/product", { state: product });
+
         // let token = localStorage.getItem('token');
-        // if (!token) {
-        //     toast.error("Please login first");
-        //     return;
-        // }
-        axios.get(`https://electronicbackend-vtjh.onrender.com/product/${product._id}`)
-            .then((res) => {
-                navigate("/product", { state:product });
-            });
-    }
+        // axios.get(`https://electronicbackend-vtjh.onrender.com/product/${product._id}`)
+        //     .then((res) => {
+        //         navigate("/product", { state: product });
+        //     });
+    };
 
     return (
         <section className="container mx-auto px-1 md:px-6 my-12">

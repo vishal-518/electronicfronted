@@ -66,11 +66,12 @@ export default function CartPage() {
   };
 
   const proceedToCheckout = (grandtotal) => {
+    console.log(cartdata)
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/signup");
     } else {
-      navigate("/pay", { state: cartdata });
+      navigate("/pay",{ state: { type: "cart" } });
     }
   };
 

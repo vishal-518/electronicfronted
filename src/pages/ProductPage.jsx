@@ -72,13 +72,19 @@ export default function ProductPage() {
             .then((res) => {
                 if (res.data.status === 200) {
                     toast.success(res.data.msg);
-                    navigate("/cart");
+                    navigate("/cart",{ state: { type: "cart" } });
                 } else {
                     toast.error(res.data.msg);
-                    navigate("/cart");
+                    navigate("/cart",{ state: { type: "cart" } });
                 }
             });
     };
+
+    const handlebuynow=(data)=>{
+        console.log(data)
+          navigate("/pay",{ state: { type: 'buy', data} });
+          
+    }
 
     return (
         <>
@@ -152,9 +158,15 @@ export default function ProductPage() {
                         <div className="flex items-center gap-3 mb-6">
                             <button
                                 onClick={() => handleAddToCart(productdel)}
-                                className="bg-red-500 cursor-pointer text-white px-6 py-3 rounded-md hover:bg-red-600"
+                                className="bg-blue-500 cursor-pointer text-white px-6 py-3 rounded-md hover:bg-blue-600"
                             >
                                 Add To Cart
+                            </button>
+                            <button
+                                onClick={() => handlebuynow(productdel)}
+                                className="bg-red-500 cursor-pointer text-white px-6 py-3 rounded-md hover:bg-red-600"
+                            >
+                                Buy Now
                             </button>
                            
                         </div>

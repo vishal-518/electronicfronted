@@ -45,6 +45,7 @@ function AddProduct() {
     //   console.error(err);
     //   toast.error("Something went wrong! Check backend.");
     // }
+
      const res = await axios.post("https://electronicbackend-vtjh.onrender.com/addproduct", product);
         toast.success(res.data.msg);
 
@@ -63,7 +64,7 @@ function AddProduct() {
         });
 
         navigate("/admin/showproduct");
-  };
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 py-10">
