@@ -38,28 +38,46 @@ export default function FlashSalesPage() {
     }, []);
 
 
+
+
     useEffect(() => {
-        axios.get("https://electronicbackend-vtjh.onrender.com/productapi", { headers: { Authorization: `Bearer ${token}` } })
+        axios.get("http://localhost:5000/productapi",{ withCredentials: true })
             .then((res) => setProductApi(res.data.productdata))
             .catch((err) => console.error(err));
-    }, [token]);
+    }, []);
+    console.log(productapi)
+
+
 
 
     const handleAddToCart = (product) => {
-        let token = localStorage.getItem('token')
-        axios.get(`https://electronicbackend-vtjh.onrender.com/product/${product._id}`, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
-            const productWithDelivery = { ...product, delivery: res.data.delivery };
-            console.log(productWithDelivery)
-            axios.post("https://electronicbackend-vtjh.onrender.com/addtocart", productWithDelivery, { headers: { Authorization: `Bearer ${token}` } })
-                .then((res) => {
-                    if (res.data.status === 200) {
-                        toast.success(res.data.msg);
-                        setTimeout(() => window.location.reload(), 1500);
-                    } else {
-                        toast.error(res.data.msg);
+        const token = localStorage.getItem('token');
+
+        // axios.get(`http://localhost:5000/product/${product._id}`, { headers: { Authorization: token ? `Bearer ${token}` : "" } })
+        //     .then((res) => {
+        //         const productWithDelivery = { ...product, delivery: res.data.delivery };
+
+               
+        //     });
+         axios.post(
+                    "http://localhost:5000/addtocart",
+                    product,
+                    {
+                        headers: { Authorization: token ? `Bearer ${token}` : "" },
+                        withCredentials: true,
                     }
-                })
-        });
+                ).then((res) => {
+                        if (res.data.status === 200) {
+                            toast.success(res.data.msg);
+                            setTimeout(() => window.location.reload(), 1500);
+                        } else {
+                            toast.error(res.data.msg);
+                        }
+                    })
+                    .catch((err) => {
+                        toast.error("Add to cart failed");
+                        console.error(err);
+                    });
     };
 
 
@@ -78,10 +96,10 @@ export default function FlashSalesPage() {
 
     const datial = (product) => {
         console.log(product)
-                navigate("/product", { state: product });
+        navigate("/product", { state: product });
 
         // let token = localStorage.getItem('token');
-        // axios.get(`https://electronicbackend-vtjh.onrender.com/product/${product._id}`)
+        // axios.get(`http://localhost:5000/product/${product._id}`)
         //     .then((res) => {
         //         navigate("/product", { state: product });
         //     });

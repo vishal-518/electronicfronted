@@ -6,7 +6,7 @@ const Homedash = () => {
   const [recent, setrecent] = useState([]);
 
   useEffect(() => {
-    axios.get("https://electronicbackend-vtjh.onrender.com/orderapiadmin").then((res) => {
+    axios.get("http://localhost:5000/orderapiadmin").then((res) => {
       setrecent(res.data.ordata);
     });
   }, []);

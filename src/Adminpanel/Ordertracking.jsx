@@ -9,14 +9,14 @@ function Ordertracking() {
 
   useEffect(() => {
     axios
-      .get("https://electronicbackend-vtjh.onrender.com/orderapiadmin")
+      .get("http://localhost:5000/orderapiadmin")
       .then((res) => setOrders(res.data.ordata))
       .catch((err) => console.error(err));
   }, []);
 
   const updateTracking = async (id, status) => {
     try {
-      await axios.put(`https://electronicbackend-vtjh.onrender.com/tracking/${id}`, { status });
+      await axios.put(`http://localhost:5000/tracking/${id}`, { status });
       toast.success("Tracking Updated");
       setOrders((prev) =>
         prev.map((o) =>
@@ -30,7 +30,7 @@ function Ordertracking() {
 
   const updateReturnData = async (id, status) => {
     try {
-      await axios.put(`https://electronicbackend-vtjh.onrender.com/return/${id}`, { status });
+      await axios.put(`http://localhost:5000/return/${id}`, { status });
       toast.success("Return Status Updated");
       setOrders((prev) =>
         prev.map((o) =>

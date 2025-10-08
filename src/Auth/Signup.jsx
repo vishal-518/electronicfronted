@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import * as jwt_decode from "jwt-decode"; 
+axios.defaults.withCredentials = true;
 
 
 export default function Signup() {
@@ -12,6 +13,12 @@ export default function Signup() {
   const [message, setMessage] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
+
+   const getCookie = (name) => {
+    const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+    if (match) return match[2];
+    return null;
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -46,7 +53,7 @@ export default function Signup() {
     //   }
     // );
       try {
-          const { data } = await axios.post("https://electronicbackend-vtjh.onrender.com/signup", formData);
+          const { data } = await axios.post("http://localhost:5000/signup", formData);
           if (data.status === 200 || data.msg === "OTP sent") {
             setMessage("OTP sent to your email.");
             setOtpSent(true);
@@ -67,7 +74,7 @@ export default function Signup() {
     }
 
     try {
-      const { data } = await axios.post("https://electronicbackend-vtjh.onrender.com/verify-otp", {
+      const { data } = await axios.post("http://localhost:5000/verify-otp", {
         email: formData.email,
         otp,
       });
@@ -86,34 +93,80 @@ export default function Signup() {
     }
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    if (!validate()) return;
+//  const handleLogin = async (e) => {
+//   e.preventDefault();
+//   if (!validate()) return;
 
-    try {
-      const { data } = await axios.post("https://electronicbackend-vtjh.onrender.com/login", formData);
-      if (data.status === 200) {
-        localStorage.setItem("token", data.usertoken);
-        localStorage.setItem("user", JSON.stringify(data.exitsuser));
-        if (data.exitsuser.role === "admin") {
-          navigative("/admin");  
-        } else {
-          navigative("/");       
+//   try {
+//     const { data } = await axios.post("http://localhost:5000/login", formData);
+//     if (data.status === 200) {
+//       localStorage.setItem("token", data.usertoken);
+//       localStorage.setItem("user", JSON.stringify(data.exitsuser));
+
+      
+//       await axios.post("http://localhost:5000/merge-cart", {
+//         userId: data.exitsuser._id,
+//         guestToken: getCookie("guestToken"),
+//       });
+
+//       if (data.exitsuser.role === "admin") {
+//         navigative("/admin");
+//       } else {
+//         navigative("/");
+//       }
+//       setMessage("Logged in successfully!");
+//       setErrors({});
+//     } else {
+//       setErrors({ general: data.msg });
+//     }
+//   } catch (err) {
+//     setErrors({ general: "Server error. Try again later." });
+//   }
+// };
+
+const handleLogin = async (e) => {
+  e.preventDefault();
+  if (!validate()) return;
+
+  try {
+    const { data } = await axios.post("http://localhost:5000/login", formData);
+
+    if (data.status === 200) {
+      const token = data.usertoken;
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(data.exitsuser));
+
+      // Merge guest cart
+      const guestToken = getCookie("guestToken");
+      if (guestToken) {
+        const mergeRes = await axios.post("http://localhost:5000/merge-cart", {
+          userId: data.exitsuser._id,
+          guestToken,
+        });
+
+        if (mergeRes.data.cart) {
+          setCartData(mergeRes.data.cart.map((item) => ({
+            ...item,
+            quantity: item.quantity || 1,
+          })));
         }
-        setMessage("Logged in successfully!");
-        setErrors({});
-      } else {
-        setErrors({ general: data.msg });
       }
-    } catch (err) {
-      setErrors({ general: "Server error. Try again later." });
+
+      navigative(data.exitsuser.role === "admin" ? "/admin" : "/");
+      setMessage("Logged in successfully!");
+      setErrors({});
+    } else {
+      setErrors({ general: data.msg });
     }
-  };
+  } catch (err) {
+    setErrors({ general: "Server error. Try again later." });
+  }
+};
 
 
   const handleGoogleLogin = async (credentialResponse) => {
     try {
-      const { data } = await axios.post("https://electronicbackend-vtjh.onrender.com/auth/google", {
+      const { data } = await axios.post("http://localhost:5000/auth/google", {
         credential: credentialResponse.credential
       });
 

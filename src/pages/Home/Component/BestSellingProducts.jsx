@@ -22,7 +22,7 @@ const BestSellingProducts = () => {
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
-        axios.get("https://electronicbackend-vtjh.onrender.com/productapi")
+        axios.get("http://localhost:5000/productapi")
             .then((res) => {
                 const data = res.data.productdata || res.data;
                 setProducts(data);
@@ -34,7 +34,7 @@ const BestSellingProducts = () => {
         let token = localStorage.getItem('token')
         const productWithDelivery = { ...product, delivery: product.delivery || 0 };
         axios
-            .post("https://electronicbackend-vtjh.onrender.com/addtocart", productWithDelivery, { headers: { Authorization: `Bearer ${token}` } })
+            .post("http://localhost:5000/addtocart", productWithDelivery, { headers: { Authorization: `Bearer ${token}` } })
             .then((res) => {
                 if (res.data.status === 200) {
                     toast.success(res.data.msg);
@@ -66,7 +66,7 @@ const BestSellingProducts = () => {
                 navigate("/product", { state: product });
 
         // let token = localStorage.getItem('token');
-        // axios.get(`https://electronicbackend-vtjh.onrender.com/product/${product._id}`)
+        // axios.get(`http://localhost:5000/product/${product._id}`)
         //     .then((res) => {
         //         navigate("/product", { state: product });
         //     });

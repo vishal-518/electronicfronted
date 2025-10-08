@@ -12,7 +12,7 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("https://electronicbackend-vtjh.onrender.com/productapi")
+    axios.get("http://localhost:5000/productapi")
       .then((res) => setProductapi(res.data.productdata))
       .catch((err) => console.error(err));
   }, []);

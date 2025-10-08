@@ -38,13 +38,11 @@ const Home = () => {
         <Slider />
 
 
-      {/* Main content area */}
       <div className="lg:ml-64">
 
-        {/* Signup Popup */}
         {showLogin && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-            <div className="relative w-[95%] sm:w-[85%] md:w-[70%] lg:w-[55%] xl:w-[80%] bg-white rounded-2xl shadow-2xl p-5 md:p-8 overflow-y-auto max-h-[90vh]">
+            <div className="relative w-[95%] sm:w-[85%] md:w-[70%] lg:w-[55%] xl:w-[80%] bg-white rounded-2xl shadow-2xl p-5 md:p-8 overflow-y-auto">
               <button
                 className="absolute top-4 right-4 cursor-pointer text-red-500 text-2xl md:text-3xl font-bold hover:text-red-700 transition"
                 onClick={() => setShowLogin(false)}
@@ -58,7 +56,6 @@ const Home = () => {
       </div>
 
 
-        {/* Sections */}
         <div className="flex flex-col gap-10 p-2 sm:p-4 md:p-6 lg:p-8">
           <FleshSalesCart />
           <BrandSlider />

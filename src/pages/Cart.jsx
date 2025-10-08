@@ -1,55 +1,70 @@
 import React, { useEffect, useState } from "react";
 import { MdOutlineDelete } from "react-icons/md";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function CartPage() {
   const [cartdata, setCartData] = useState([]);
-  const [coupon, setCoupon] = useState("");
+  const [token, setToken] = useState(localStorage.getItem("token"));
   const navigate = useNavigate();
-  const location = useLocation();
-  const [buydata] = useState(location.state || []);
 
+  // Calculate totals
   const subtotal = cartdata.reduce((acc, item) => acc + Number(item.product_price) * Number(item.quantity || 1), 0);
-
   const totalDelivery = cartdata.reduce((acc, item) => acc + Number(item.delivery?.deliveryCharge || 0), 0);
-
   const grandtotal = subtotal + totalDelivery;
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    axios
-      .get("https://electronicbackend-vtjh.onrender.com/cartapi", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        const cartWithQty = res.data.cartapidata.map((item) => ({
-          ...item,
-          quantity: item.quantity ? Number(item.quantity) : 1,
-        }));
-        setCartData(cartWithQty);
+  // Utility to get cookie
+  const getCookie = (name) => {
+    const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+    if (match) return match[2];
+    return null;
+  };
+
+  // Fetch cart (token or guestToken)
+  const fetchCart = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const guestToken = getCookie("guestToken");
+
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const url = "http://localhost:5000/cartapi";
+
+      const res = await axios.get(url, {
+        headers,
+        withCredentials: true,
+        params: token ? {} : { guestToken },
       });
-  }, []);
 
-  const handleApplyCoupon = () => {
-    alert("Coupon applied: " + coupon);
-    setCoupon("");
+      const cartWithQty = res.data.cartapidata.map((item) => ({
+        ...item,
+        quantity: item.quantity ? Number(item.quantity) : 1,
+      }));
+
+      setCartData(cartWithQty);
+    } catch (err) {
+      console.error("Error fetching cart:", err);
+    }
   };
 
-  const handleRemoveItem = (item) => {
-    const token = localStorage.getItem("token");
-    axios
-      .post("https://electronicbackend-vtjh.onrender.com/removecart", item, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        toast.success(res.data.msg);
-        setCartData((prev) => prev.filter((p) => p._id !== item._id));
-      })
-      .catch(() => toast.error("Failed to remove item"));
+  // Fetch cart on load or token change
+  useEffect(() => {
+    fetchCart();
+  }, [token]);
+
+  // Remove item from cart
+  const handleRemoveItem = async (item) => {
+    try {
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      await axios.post("http://localhost:5000/removecart", item, { headers });
+      toast.success("Item removed");
+      setCartData((prev) => prev.filter((p) => p._id !== item._id));
+    } catch (err) {
+      toast.error("Failed to remove item");
+    }
   };
 
+  // Update quantity locally
   const updateQty = (id, type) => {
     setCartData((prev) =>
       prev.map((item) => {
@@ -57,26 +72,21 @@ export default function CartPage() {
           const currentQty = Number(item.quantity || 1);
           return {
             ...item,
-            quantity:
-              type === "inc" ? currentQty + 1 : Math.max(currentQty - 1, 1),
+            quantity: type === "inc" ? currentQty + 1 : Math.max(currentQty - 1, 1),
           };
-        } else return item;
+        }
+        return item;
       })
     );
   };
 
-  const proceedToCheckout = (grandtotal) => {
-    console.log(cartdata)
-    const token = localStorage.getItem("token");
+  // Proceed to checkout
+  const proceedToCheckout = () => {
     if (!token) {
       navigate("/signup");
     } else {
-      navigate("/pay",{ state: { type: "cart" } });
+      navigate("/pay", { state: { type: "cart", cartdata } });
     }
-  };
-
-  const BiDetail = (item) => {
-    navigate("/product", { state: item });
   };
 
   return (
@@ -93,51 +103,26 @@ export default function CartPage() {
           {/* Left - Cart Items */}
           <div className="lg:col-span-2 space-y-6">
             {cartdata.map((item) => (
-              <div
-                key={item._id}
-                className="flex flex-col md:flex-row items-center justify-between rounded-lg p-4 shadow bg-white"
-              >
-                {/* Product Image */}
+              <div key={item._id} className="flex flex-col md:flex-row items-center justify-between rounded-lg p-4 shadow bg-white">
                 <div className="flex items-center gap-4 flex-1">
                   <img
-                    onClick={() => BiDetail(item)}
                     src={item.product_img}
                     alt={item.product_name}
                     className="w-24 h-24 cursor-pointer rounded"
                   />
                   <div>
-                    <h3 className="font-semibold text-gray-800">
-                      {item.product_titel}
-                    </h3>
+                    <h3 className="font-semibold text-gray-800">{item.product_titel}</h3>
                     <p className="text-gray-600">₹{item.product_price}</p>
                   </div>
                 </div>
-
-                {/* Quantity & Actions */}
                 <div className="flex items-center gap-4 mt-4 md:mt-0">
                   <div className="flex items-center rounded-lg">
-                    <button
-                      onClick={() => updateQty(item._id, "dec")}
-                      className="px-3 py-1 bg-gray-100 hover:bg-gray-200"
-                    >
-                      -
-                    </button>
+                    <button onClick={() => updateQty(item._id, "dec")} className="px-3 py-1 bg-gray-100 hover:bg-gray-200">-</button>
                     <span className="px-4">{item.quantity}</span>
-                    <button
-                      onClick={() => updateQty(item._id, "inc")}
-                      className="px-3 py-1 bg-gray-100 hover:bg-gray-200"
-                    >
-                      +
-                    </button>
+                    <button onClick={() => updateQty(item._id, "inc")} className="px-3 py-1 bg-gray-100 hover:bg-gray-200">+</button>
                   </div>
-                  <p className="font-semibold text-gray-800">
-                    ₹{(item.product_price * item.quantity).toFixed(2)}
-                  </p>
-                
-                  <MdOutlineDelete
-                    onClick={() => handleRemoveItem(item)}
-                    className="text-2xl text-red-500 cursor-pointer hover:text-red-700"
-                  />
+                  <p className="font-semibold text-gray-800">₹{(item.product_price * item.quantity).toFixed(2)}</p>
+                  <MdOutlineDelete onClick={() => handleRemoveItem(item)} className="text-2xl text-red-500 cursor-pointer hover:text-red-700" />
                 </div>
               </div>
             ))}
@@ -145,48 +130,13 @@ export default function CartPage() {
 
           {/* Right - Coupon + Total */}
           <div className="space-y-6">
-            <div className="border p-1 md:p-6 rounded-lg shadow bg-white">
-              <h3 className="text-sm md:text-xl font-bold mb-4">Apply Coupon</h3>
-              <div className="flex gap-3">
-                <input
-                  type="text"
-                  value={coupon}
-                  onChange={(e) => setCoupon(e.target.value)}
-                  placeholder="Coupon Code"
-                  className="flex-1 border rounded md:px-4 md:py-2 placeholder:ps-2 focus:ring-2 focus:ring-red-400 outline-none"
-                />
-                <button
-                  onClick={handleApplyCoupon}
-                  className="bg-red-500 text-white px-2 text-sm md:text-xl md:px-5 md:py-2 rounded hover:bg-red-600"
-                >
-                  Apply
-                </button>
-              </div>
-            </div>
-
             <div className="border p-2 md:p-6 rounded-lg shadow bg-white">
               <h3 className="text-2xl font-bold mb-6">Cart Total</h3>
-              <div className="flex justify-between mb-3 text-gray-700">
-                <span>Subtotal:</span>
-                <span>₹{subtotal.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between mb-3 text-gray-700">
-                <span>Delivery:</span>
-                <span className="font-medium">
-                  ₹{totalDelivery.toFixed(2)}
-                </span>
-              </div>
+              <div className="flex justify-between mb-3 text-gray-700"><span>Subtotal:</span><span>₹{subtotal.toFixed(2)}</span></div>
+              <div className="flex justify-between mb-3 text-gray-700"><span>Delivery:</span><span>₹{totalDelivery.toFixed(2)}</span></div>
               <hr className="my-4" />
-              <div className="flex justify-between font-bold text-xl mb-6 text-gray-800">
-                <span>Grand Total:</span>
-                <span>₹{grandtotal.toFixed(2)}</span>
-              </div>
-              <button
-                onClick={()=>proceedToCheckout(grandtotal)}
-                className="w-full bg-red-500 text-white py-3 rounded hover:bg-red-600 font-semibold"
-              >
-                Proceed to Checkout
-              </button>
+              <div className="flex justify-between font-bold text-xl mb-6 text-gray-800"><span>Grand Total:</span><span>₹{grandtotal.toFixed(2)}</span></div>
+              <button onClick={proceedToCheckout} className="w-full bg-red-500 text-white py-3 rounded hover:bg-red-600 font-semibold">Proceed to Checkout</button>
             </div>
           </div>
         </div>

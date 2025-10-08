@@ -13,7 +13,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     axios
-      .get("https://electronicbackend-vtjh.onrender.com/profile", {
+      .get("http://localhost:5000/profile", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
@@ -42,7 +42,7 @@ export default function ProfilePage() {
 const save = () => {
   const token = localStorage.getItem("token");
   axios.post(
-    "https://electronicbackend-vtjh.onrender.com/update-profile",
+    "http://localhost:5000/update-profile",
     {
       fname: inputData.fname,
       lname: inputData.lname,

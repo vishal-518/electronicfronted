@@ -15,29 +15,27 @@ const Paymentway = () => {
   const [pincodeMsg, setPincodeMsg] = useState("");
   const [pincodeStatus, setPincodeStatus] = useState("");
   const navigate = useNavigate();
- 
 
 
-  const [formData, setFormData] = useState({
-    fname: "",
-    lname: "",
-    email: "",
-    mobile: "",
-    address: "",
-    town: "",
-    city: "",
-    state: "",
-    pincode: "",
-    // totalAmount: state.reduce((a, b) => a + b.product_price * b.quantity, 0)
-    totalAmount:
-  state?.type === "buy"
-    ? state.data?.product_price * (state.data?.quantity || 1)
-    : Array.isArray(state?.data)
-    ? state.data.reduce((a, b) => a + b.product_price * b.quantity, 0)
-    : 0
+console.log(state)
+ const [formData, setFormData] = useState({
+  fname: "",
+  lname: "",
+  email: "",
+  mobile: "",
+  address: "",
+  town: "",
+  city: "",
+  state: "",
+  pincode: "",
+  totalAmount:
+    state?.type === "buy"
+      ? state.data?.product_price * (state.data?.quantity || 1)
+      : state?.type === "cart" && Array.isArray(state.cartdata)
+        ? state.cartdata.reduce((a, b) => a + b.product_price * b.quantity, 0)
+        : 0
+});
 
-
-  });
 
 
 
@@ -83,7 +81,7 @@ const Paymentway = () => {
       setPincodeStatus("error");
       return;
     }
-    axios.post("https://electronicbackend-vtjh.onrender.com/check-pincode", { pincode }).then((res) => {
+    axios.post("http://localhost:5000/check-pincode", { pincode }).then((res) => {
       if (res.data.status === 200) {
         setDeliveryInfo(res.data);
         setIsPincodeValid(true);
@@ -118,7 +116,7 @@ const Paymentway = () => {
       const token = localStorage.getItem("token");
 
       if (paymentMethod === "cash on delivery") {
-        await axios.post("https://electronicbackend-vtjh.onrender.com/order",
+        await axios.post("http://localhost:5000/order",
           { ...formData, products: productdata, totalAmount: formData.totalAmount, paymentMethod },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -146,7 +144,7 @@ const Paymentway = () => {
   };
 
   async function startOnlinePayment(latitude, longitude, token) {
-    const orderRes = await axios.post("https://electronicbackend-vtjh.onrender.com/order",
+    const orderRes = await axios.post("http://localhost:5000/order",
       {
         ...formData,
         products: productdata,
@@ -159,7 +157,7 @@ const Paymentway = () => {
     );
 
     const { data } = await axios.post(
-      "https://electronicbackend-vtjh.onrender.com/create-order",
+      "http://localhost:5000/create-order",
       { amount: formData.totalAmount, currency: "INR" },
       { headers: { "Content-Type": "application/json" } }
     );
@@ -180,7 +178,7 @@ const Paymentway = () => {
       handler: async function (response) {
         try {
           const verifyRes = await axios.post(
-            "https://electronicbackend-vtjh.onrender.com/verify-payment",
+            "http://localhost:5000/verify-payment",
             {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
@@ -446,26 +444,26 @@ const Paymentway = () => {
           )
           } */}
           {state?.type === "buy" ? (
-  <div className="flex justify-between items-center border-b pb-2">
-    <div className="flex items-center">
-      <img src={state?.data?.product_img} className="w-14 h-14 shadow-2xl" alt="" />
-      <p>{state?.data?.product_name} x {state?.data?.quantity}</p>
-    </div>
-    <p>₹{state?.data?.product_price * (state?.data?.quantity || 1)}</p>
-  </div>
-) : state?.type === "cart" ? (
-  state?.data?.map((item, index) => (
-    <div key={index} className="flex justify-between items-center border-b pb-2">
-      <div className="flex items-center">
-        <img src={item.product_img} className="w-14 h-14 shadow-2xl" alt="" />
-        <p>{item.product_name} x {item.quantity}</p>
-      </div>
-      <p>₹{item.product_price * item.quantity}</p>
-    </div>
-  ))
-) : (
-  <p className="text-gray-400">No Items Found</p>
-)}
+            <div className="flex justify-between items-center border-b pb-2">
+              <div className="flex items-center">
+                <img src={state?.data?.product_img} className="w-14 h-14 shadow-2xl" alt="" />
+                <p>{state?.data?.product_name} x {state?.data?.quantity}</p>
+              </div>
+              <p>₹{state?.data?.product_price * (state?.data?.quantity || 1)}</p>
+            </div>
+          ) : state?.type === "cart" ? (
+            state?.cartdata.map((item, index) => (
+              <div key={index} className="flex justify-between items-center border-b pb-2">
+                <div className="flex items-center">
+                  <img src={item.product_img} className="w-14 h-14 shadow-2xl" alt="" />
+                  <p>{item.product_name} x {item.quantity}</p>
+                </div>
+                <p>₹{item.product_price * item.quantity}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-400">No Items Found</p>
+          )}
 
         </div>
         <div className="mt-4 font-bold text-lg">

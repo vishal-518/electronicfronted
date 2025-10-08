@@ -15,11 +15,10 @@ export default function ProductPage() {
     const [productdel, setproductdel] = useState(location.state || null);
     let navigate = useNavigate();
     console.log(productdel)
-
     if (!productdel) {
         return (
             <div className="flex justify-center items-center h-screen text-lg">
-                 No product data found!
+                No product data found!
             </div>
         );
     }
@@ -66,24 +65,32 @@ export default function ProductPage() {
     let handleAddToCart = (data) => {
         let token = localStorage.getItem("token");
         axios
-            .post("https://electronicbackend-vtjh.onrender.com/addtocart", data, {
+            .post("http://localhost:5000/addtocart", data, {
                 headers: { Authorization: `Bearer ${token}` },
             })
             .then((res) => {
                 if (res.data.status === 200) {
                     toast.success(res.data.msg);
-                    navigate("/cart",{ state: { type: "cart" } });
+                    // navigate("/cart",{ state: { type: "cart" } });
+                    navigate("/cart");
                 } else {
                     toast.error(res.data.msg);
-                    navigate("/cart",{ state: { type: "cart" } });
+                    // navigate("/cart",{ state: { type: "cart" } });
+                    navigate("/cart");
                 }
             });
     };
 
-    const handlebuynow=(data)=>{
+    const handlebuynow = (data) => {
         console.log(data)
-          navigate("/pay",{ state: { type: 'buy', data} });
-          
+        let token = localStorage.getItem("token");
+        if (token) {
+            navigate("/pay", { state: { type: 'buy', data } });
+        } else {
+            navigate('/signup')
+        }
+        //   navigate("/pay",{ state: data });
+
     }
 
     return (
@@ -168,7 +175,7 @@ export default function ProductPage() {
                             >
                                 Buy Now
                             </button>
-                           
+
                         </div>
 
                         <div className="mb-3">
