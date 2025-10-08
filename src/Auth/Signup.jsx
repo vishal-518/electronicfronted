@@ -184,7 +184,7 @@ const handleLogin = async (e) => {
 
   return (
     <GoogleOAuthProvider clientId="85461286396-tvp0anihktqa7h5i4475emmek6hsmdia.apps.googleusercontent.com">
-      <div className="flex flex-col md:flex-row m-auto h-[600px]">
+      <div className="flex flex-col md:flex-row m-auto ">
         {/* Left side image */}
         <div className="w-full md:w-1/2 hidden md:flex items-center justify-center">
           <img
