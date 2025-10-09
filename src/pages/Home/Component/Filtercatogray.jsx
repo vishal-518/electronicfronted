@@ -17,7 +17,7 @@ function Filtercatogray() {
   const [allProducts, setAllProducts] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/productapi")
+    axios.get("https://electronicbackend-bzcr.onrender.com/productapi",{   withCredentials: true})
       .then((res) => {
         const data = res.data.productdata || res.data;
         setProducts(data);
@@ -103,27 +103,47 @@ function Filtercatogray() {
     }));
   };
 
-  const handleAddToCart = (product) => {
-    let token = localStorage.getItem('token')
-    const productWithDelivery = { ...product, delivery: product.delivery || 0 };
-    axios
-      .post("http://localhost:5000/addtocart", productWithDelivery, { headers: { Authorization: `Bearer ${token}` } })
-      .then((res) => {
-        if (res.data.status === 200) {
-          toast.success(res.data.msg);
-          setTimeout(() => window.location.reload(), 1500);
-        } else {
-          toast.error(res.data.msg);
-        }
-      });
-  };
+   const handleAddToCart = (product) => {
+        const token = localStorage.getItem('token');
+
+        // axios.get(`https://electronicbackend-bzcr.onrender.com/product/${product._id}`, { headers: { Authorization: token ? `Bearer ${token}` : "" } })
+        //     .then((res) => {
+        //         const productWithDelivery = { ...product, delivery: res.data.delivery };
+
+
+        //     });
+        axios.post(
+            "https://electronicbackend-bzcr.onrender.com/addtocart",
+            product,
+            {
+                headers: { Authorization: token ? `Bearer ${token}` : "" },
+                withCredentials: true,
+            }
+        ).then((res) => {
+            if (res.data.status === 200) {
+                toast.success(res.data.msg);
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                toast.error(res.data.msg);
+            }
+        })
+            .catch((err) => {
+                toast.error("Add to cart failed");
+                console.error(err);
+            });
+
+
+       
+
+    };
+
 
    const datial = (product) => {
         console.log(product)
                 navigate("/product", { state: product });
 
         // let token = localStorage.getItem('token');
-        // axios.get(`http://localhost:5000/product/${product._id}`)
+        // axios.get(`https://electronicbackend-bzcr.onrender.com/product/${product._id}`)
         //     .then((res) => {
         //         navigate("/product", { state: product });
         //     });

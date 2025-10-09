@@ -19,7 +19,7 @@ function ForgetPassword() {
     const handleSendOtp = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post('http://localhost:5000/forgot-password', { email: inputData.email });
+            const res = await axios.post('https://electronicbackend-bzcr.onrender.com/forgot-password', { email: inputData.email });
             setMessage(res.data.msg);
             setStep(2);
         } catch (err) {
@@ -30,7 +30,7 @@ function ForgetPassword() {
     const handleVerifyOtp = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post('http://localhost:5000/verify-otp', {
+            const res = await axios.post('https://electronicbackend-bzcr.onrender.com/verify-otp', {
                 email: inputData.email,
                 otp: inputData.otp
             });
@@ -49,7 +49,7 @@ function ForgetPassword() {
             return;
         }
         try {
-            const res = await axios.post('http://localhost:5000/reset-password', {
+            const res = await axios.post('https://electronicbackend-bzcr.onrender.com/reset-password', {
                 email: inputData.email,
                 otp: inputData.otp,
                 newPassword: inputData.newPassword

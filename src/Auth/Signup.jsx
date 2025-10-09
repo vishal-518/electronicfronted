@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
-import * as jwt_decode from "jwt-decode"; 
+import { jwtDecode } from "jwt-decode";
 axios.defaults.withCredentials = true;
 
 
@@ -14,7 +14,7 @@ export default function Signup() {
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
 
-   const getCookie = (name) => {
+  const getCookie = (name) => {
     const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
     if (match) return match[2];
     return null;
@@ -24,6 +24,9 @@ export default function Signup() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   let navigative = useNavigate()
+  let location = useLocation()
+  const redirectTo = location.state?.redirect || "/"
+  console.log(redirectTo)
 
 
   const validate = () => {
@@ -46,24 +49,24 @@ export default function Signup() {
     //   async (pos) => {
     //     const updatedData = { ...formData, location: { lat: pos.coords.latitude, lng: pos.coords.longitude, }, };
 
-      
+
     //   },
     //   (err) => {
     //     alert("Please allow location access!");
     //   }
     // );
-      try {
-          const { data } = await axios.post("http://localhost:5000/signup", formData);
-          if (data.status === 200 || data.msg === "OTP sent") {
-            setMessage("OTP sent to your email.");
-            setOtpSent(true);
-            setErrors({});
-          } else {
-            setErrors({ general: data.msg });
-          }
-        } catch (err) {
-          setErrors({ general: "Server error." });
-        }
+    try {
+      const { data } = await axios.post("http://localhost:5000/signup", formData);
+      if (data.status === 200 || data.msg === "OTP sent") {
+        setMessage("OTP sent to your email.");
+        setOtpSent(true);
+        setErrors({});
+      } else {
+        setErrors({ general: data.msg });
+      }
+    } catch (err) {
+      setErrors({ general: "Server error." });
+    }
   };
 
   const handleVerifyOtp = async (e) => {
@@ -93,75 +96,105 @@ export default function Signup() {
     }
   };
 
-//  const handleLogin = async (e) => {
-//   e.preventDefault();
-//   if (!validate()) return;
+  //  const handleLogin = async (e) => {
+  //   e.preventDefault();
+  //   if (!validate()) return;
 
-//   try {
-//     const { data } = await axios.post("http://localhost:5000/login", formData);
-//     if (data.status === 200) {
-//       localStorage.setItem("token", data.usertoken);
-//       localStorage.setItem("user", JSON.stringify(data.exitsuser));
+  //   try {
+  //     const { data } = await axios.post("https://electronicbackend-bzcr.onrender.com/login", formData);
+  //     if (data.status === 200) {
+  //       localStorage.setItem("token", data.usertoken);
+  //       localStorage.setItem("user", JSON.stringify(data.exitsuser));
 
-      
-//       await axios.post("http://localhost:5000/merge-cart", {
-//         userId: data.exitsuser._id,
-//         guestToken: getCookie("guestToken"),
-//       });
 
-//       if (data.exitsuser.role === "admin") {
-//         navigative("/admin");
-//       } else {
-//         navigative("/");
-//       }
-//       setMessage("Logged in successfully!");
-//       setErrors({});
-//     } else {
-//       setErrors({ general: data.msg });
-//     }
-//   } catch (err) {
-//     setErrors({ general: "Server error. Try again later." });
-//   }
-// };
+  //       await axios.post("https://electronicbackend-bzcr.onrender.com/merge-cart", {
+  //         userId: data.exitsuser._id,
+  //         guestToken: getCookie("guestToken"),
+  //       });
 
-const handleLogin = async (e) => {
-  e.preventDefault();
-  if (!validate()) return;
+  //       if (data.exitsuser.role === "admin") {
+  //         navigative("/admin");
+  //       } else {
+  //         navigative("/");
+  //       }
+  //       setMessage("Logged in successfully!");
+  //       setErrors({});
+  //     } else {
+  //       setErrors({ general: data.msg });
+  //     }
+  //   } catch (err) {
+  //     setErrors({ general: "Server error. Try again later." });
+  //   }
+  // };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    try {
+      const { data } = await axios.post("http://localhost:5000/login", formData);
+
+      if (data.status === 200) {
+        const token = data.usertoken;
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(data.exitsuser));
+
+        const guestToken = getCookie("guestToken");
+        if (guestToken) {
+          const mergeRes = await axios.post("http://localhost:5000/merge-cart", {
+            userId: data.exitsuser._id,
+            guestToken,
+          });
+
+          if (mergeRes.data.cart) {
+            setCartData(mergeRes.data.cart.map((item) => ({
+              ...item,
+              quantity: item.quantity || 1,
+            })));
+          }
+        }
+
+        if (data.exitsuser.role === "admin") {
+          navigative("/admin");
+        } else {
+          navigative(redirectTo);
+        }
+        setMessage("Logged in successfully!");
+        setErrors({});
+      } else {
+        setErrors({ general: data.msg });
+      }
+    } catch (err) {
+      setErrors({ general: "Server error. Try again later." });
+    }
+  };
+
+ const checkTokenExpiry = () => {
+  const token = localStorage.getItem("token");
+  if (!token) return;
 
   try {
-    const { data } = await axios.post("http://localhost:5000/login", formData);
+    const decoded = jwtDecode(token);
+    const currentTime = Date.now() / 1000;
 
-    if (data.status === 200) {
-      const token = data.usertoken;
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(data.exitsuser));
-
-      // Merge guest cart
-      const guestToken = getCookie("guestToken");
-      if (guestToken) {
-        const mergeRes = await axios.post("http://localhost:5000/merge-cart", {
-          userId: data.exitsuser._id,
-          guestToken,
-        });
-
-        if (mergeRes.data.cart) {
-          setCartData(mergeRes.data.cart.map((item) => ({
-            ...item,
-            quantity: item.quantity || 1,
-          })));
-        }
-      }
-
-      navigative(data.exitsuser.role === "admin" ? "/admin" : "/");
-      setMessage("Logged in successfully!");
-      setErrors({});
-    } else {
-      setErrors({ general: data.msg });
+    if (decoded.exp < currentTime) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/signup";
     }
   } catch (err) {
-    setErrors({ general: "Server error. Try again later." });
+    console.error("Invalid token:", err);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
   }
 };
+
+useEffect(() => {
+  checkTokenExpiry();
+  const interval = setInterval(checkTokenExpiry, 60 * 1000); 
+  return () => clearInterval(interval);
+}, []);
+
 
 
   const handleGoogleLogin = async (credentialResponse) => {

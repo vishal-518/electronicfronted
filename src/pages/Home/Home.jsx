@@ -42,7 +42,7 @@ const Home = () => {
 
         {showLogin && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-            <div className="relative w-[95%] sm:w-[85%] md:w-[70%] lg:w-[55%] xl:w-[80%] bg-white rounded-2xl shadow-2xl  border md:p-18 overflow-y-auto">
+            <div className="relative w-[95%] sm:w-[85%] md:w-[70%] lg:w-[55%] xl:w-[80%] bg-white rounded-2xl shadow-2xl md:p-18 overflow-y-auto">
               <button
                 className="absolute top-4 right-4 cursor-pointer text-red-500 text-2xl md:text-3xl font-bold hover:text-red-700 transition"
                 onClick={() => setShowLogin(false)}

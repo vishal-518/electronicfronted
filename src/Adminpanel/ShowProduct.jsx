@@ -7,13 +7,13 @@ function ShowProduct() {
   let statusSteps = ["stock", "outofstock"];
 
   useEffect(() => {
-    axios.get("http://localhost:5000/productapi").then((res) => {
+    axios.get("https://electronicbackend-bzcr.onrender.com/productapi").then((res) => {
       setproductapi(res.data.productdata);
     });
   }, []);
 
   let deleteproduct = (id) => {
-    axios.post("http://localhost:5000/deleteproduct", { id }).then((res) => {
+    axios.post("https://electronicbackend-bzcr.onrender.com/deleteproduct", { id }).then((res) => {
       toast.success(res.data.msg);
       setproductapi((prev) => prev.filter((p) => p._id !== id));
     });
@@ -21,7 +21,7 @@ function ShowProduct() {
 
   let updateStock = async (id, status) => {
     try {
-      const res = await axios.put(`http://localhost:5000/stock/${id}`, { status });
+      const res = await axios.put(`https://electronicbackend-bzcr.onrender.com/stock/${id}`, { status });
       toast.success(res.data.msg);
       setproductapi((prev) =>
         prev.map((p) => (p._id === id ? res.data.product : p))

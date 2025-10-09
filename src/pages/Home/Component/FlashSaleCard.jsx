@@ -41,11 +41,11 @@ export default function FlashSalesPage() {
 
 
     useEffect(() => {
-        axios.get("http://localhost:5000/productapi",{ withCredentials: true })
+        axios.get("https://electronicbackend-bzcr.onrender.com/productapi", { withCredentials: true })
             .then((res) => setProductApi(res.data.productdata))
             .catch((err) => console.error(err));
     }, []);
-    console.log(productapi)
+
 
 
 
@@ -53,31 +53,35 @@ export default function FlashSalesPage() {
     const handleAddToCart = (product) => {
         const token = localStorage.getItem('token');
 
-        // axios.get(`http://localhost:5000/product/${product._id}`, { headers: { Authorization: token ? `Bearer ${token}` : "" } })
+        // axios.get(`https://electronicbackend-bzcr.onrender.com/product/${product._id}`, { headers: { Authorization: token ? `Bearer ${token}` : "" } })
         //     .then((res) => {
         //         const productWithDelivery = { ...product, delivery: res.data.delivery };
 
-               
+
         //     });
-         axios.post(
-                    "http://localhost:5000/addtocart",
-                    product,
-                    {
-                        headers: { Authorization: token ? `Bearer ${token}` : "" },
-                        withCredentials: true,
-                    }
-                ).then((res) => {
-                        if (res.data.status === 200) {
-                            toast.success(res.data.msg);
-                            setTimeout(() => window.location.reload(), 1500);
-                        } else {
-                            toast.error(res.data.msg);
-                        }
-                    })
-                    .catch((err) => {
-                        toast.error("Add to cart failed");
-                        console.error(err);
-                    });
+        axios.post(
+            "https://electronicbackend-bzcr.onrender.com/addtocart",
+            product,
+            {
+                headers: { Authorization: token ? `Bearer ${token}` : "" },
+                withCredentials: true,
+            }
+        ).then((res) => {
+            if (res.data.status === 200) {
+                toast.success(res.data.msg);
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                toast.error(res.data.msg);
+            }
+        })
+            .catch((err) => {
+                toast.error("Add to cart failed");
+                console.error(err);
+            });
+
+
+       
+
     };
 
 
@@ -99,7 +103,7 @@ export default function FlashSalesPage() {
         navigate("/product", { state: product });
 
         // let token = localStorage.getItem('token');
-        // axios.get(`http://localhost:5000/product/${product._id}`)
+        // axios.get(`https://electronicbackend-bzcr.onrender.com/product/${product._id}`)
         //     .then((res) => {
         //         navigate("/product", { state: product });
         //     });
@@ -135,7 +139,7 @@ export default function FlashSalesPage() {
                         <div className="border border-gray-300 rounded-lg p-4 flex flex-col items-center relative group">
                             {product.discount && (
                                 <span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
-                                    {product.discount}
+                                    {product.product_discount}
                                 </span>
                             )}
                             <button

@@ -17,14 +17,20 @@ export default function Contact() {
     let handlecontact = (e) => {
         e.preventDefault()
         let token = localStorage.getItem('token')
-        axios.post('http://localhost:5000/contact', inputvalue, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
+        axios.post('https://electronicbackend-bzcr.onrender.com/contact', inputvalue, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
             toast.success(res.data.msg)
+            setinputvalue({
+                name: "",
+                email: "",
+                number: "",
+                message: ""
+            })
         })
     }
 
     return (
         <div className="flex justify-center py-10 bg-gray-50">
-            <Toaster position="top-right" reverseOrder={false}/>
+            <Toaster position="top-right" reverseOrder={false} />
             <div className="max-w-5xl w-full grid grid-cols-1 md:grid-cols-3 gap-6">
 
                 {/* Left Side Info */}

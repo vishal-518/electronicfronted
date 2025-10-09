@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { MdOutlineDelete } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
+import {  redirect, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -9,26 +9,23 @@ export default function CartPage() {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const navigate = useNavigate();
 
-  // Calculate totals
   const subtotal = cartdata.reduce((acc, item) => acc + Number(item.product_price) * Number(item.quantity || 1), 0);
   const totalDelivery = cartdata.reduce((acc, item) => acc + Number(item.delivery?.deliveryCharge || 0), 0);
   const grandtotal = subtotal + totalDelivery;
 
-  // Utility to get cookie
   const getCookie = (name) => {
     const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
     if (match) return match[2];
     return null;
   };
 
-  // Fetch cart (token or guestToken)
   const fetchCart = async () => {
     try {
       const token = localStorage.getItem("token");
       const guestToken = getCookie("guestToken");
 
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      const url = "http://localhost:5000/cartapi";
+      const url = "https://electronicbackend-bzcr.onrender.com/cartapi";
 
       const res = await axios.get(url, {
         headers,
@@ -47,16 +44,14 @@ export default function CartPage() {
     }
   };
 
-  // Fetch cart on load or token change
   useEffect(() => {
     fetchCart();
   }, [token]);
 
-  // Remove item from cart
   const handleRemoveItem = async (item) => {
     try {
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      await axios.post("http://localhost:5000/removecart", item, { headers });
+      await axios.post("https://electronicbackend-bzcr.onrender.com/removecart", item, { headers });
       toast.success("Item removed");
       setCartData((prev) => prev.filter((p) => p._id !== item._id));
     } catch (err) {
@@ -64,7 +59,6 @@ export default function CartPage() {
     }
   };
 
-  // Update quantity locally
   const updateQty = (id, type) => {
     setCartData((prev) =>
       prev.map((item) => {
@@ -80,10 +74,9 @@ export default function CartPage() {
     );
   };
 
-  // Proceed to checkout
   const proceedToCheckout = () => {
     if (!token) {
-      navigate("/signup");
+      navigate("/signup",{ state: { redirect:'/pay' } });
     } else {
       navigate("/pay", { state: { type: "cart", cartdata } });
     }

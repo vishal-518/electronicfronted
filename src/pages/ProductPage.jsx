@@ -62,24 +62,40 @@ export default function ProductPage() {
         },
     ];
 
-    let handleAddToCart = (data) => {
-        let token = localStorage.getItem("token");
-        axios
-            .post("http://localhost:5000/addtocart", data, {
-                headers: { Authorization: `Bearer ${token}` },
-            })
-            .then((res) => {
-                if (res.data.status === 200) {
-                    toast.success(res.data.msg);
-                    // navigate("/cart",{ state: { type: "cart" } });
-                    navigate("/cart");
-                } else {
-                    toast.error(res.data.msg);
-                    // navigate("/cart",{ state: { type: "cart" } });
-                    navigate("/cart");
-                }
+   const handleAddToCart = (product) => {
+        const token = localStorage.getItem('token');
+
+        // axios.get(`https://electronicbackend-bzcr.onrender.com/product/${product._id}`, { headers: { Authorization: token ? `Bearer ${token}` : "" } })
+        //     .then((res) => {
+        //         const productWithDelivery = { ...product, delivery: res.data.delivery };
+
+
+        //     });
+        axios.post(
+            "https://electronicbackend-bzcr.onrender.com/addtocart",
+            product,
+            {
+                headers: { Authorization: token ? `Bearer ${token}` : "" },
+                withCredentials: true,
+            }
+        ).then((res) => {
+            if (res.data.status === 200) {
+                toast.success(res.data.msg);
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                toast.error(res.data.msg);
+            }
+        })
+            .catch((err) => {
+                toast.error("Add to cart failed");
+                console.error(err);
             });
+
+
+       
+
     };
+
 
     const handlebuynow = (data) => {
         console.log(data)
