@@ -170,39 +170,39 @@ const Header = () => {
 
               {activeIndex && (
                 <div className="absolute top-12 right-0 w-64 bg-white rounded-md shadow-md z-50 border border-gray-200">
-                  <Link to="/editprofile" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100">
+                  <Link onClick={()=>setActiveIndex(false)} to="/editprofile" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100">
                     <MdOutlineAccountCircle className="text-blue-600" size={20} />
                     <span>My Profile</span>
                   </Link>
-                  <Link to="/supercoin" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100">
+                  <Link onClick={()=>setActiveIndex(false)} to="/supercoin" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100">
                     <TbCoinRupee className="text-blue-600" size={20} />
                     <span>SuperCoin Zone</span>
                   </Link>
-                  <Link to="/pluszone" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100">
+                  <Link onClick={()=>setActiveIndex(false)} to="/pluszone" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100">
                     <FaStar className="text-blue-600" size={18} />
                     <span>Flipkart Plus Zone</span>
                   </Link>
-                  <Link to="/orderhistory" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100">
+                  <Link onClick={()=>setActiveIndex(false)} to="/orderhistory" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100">
                     <BiSolidShoppingBags className="text-blue-600" size={20} />
                     <span>Orders</span>
                   </Link>
-                  <Link to="/wishlist" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100">
+                  <Link onClick={()=>setActiveIndex(false)} to="/wishlist" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100">
                     <CiHeart className="text-blue-600" size={20} />
                     <span>Wishlist</span>
                   </Link>
-                  <Link to="/coupons" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100">
+                  <Link onClick={()=>setActiveIndex(false)} to="/coupons" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100">
                     <RiCoupon3Line className="text-blue-600" size={20} />
                     <span>Coupons</span>
                   </Link>
-                  <Link to="/giftcards" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100">
+                  <Link onClick={()=>setActiveIndex(false)} to="/giftcards" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100">
                     <TbGiftCard className="text-blue-600" size={20} />
                     <span>Gift Cards</span>
                   </Link>
-                  <Link to="/notifications" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100">
+                  <Link onClick={()=>setActiveIndex(false)} to="/notifications" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100">
                     <MdOutlineNotificationsNone className="text-blue-600" size={20} />
                     <span>Notifications</span>
                   </Link>
-                  <button onClick={logout} className="flex items-center cursor-pointer gap-3 px-4 py-2 hover:bg-gray-100 w-full text-left">
+                  <button onClick={logout}  className="flex items-center cursor-pointer gap-3 px-4 py-2 hover:bg-gray-100 w-full text-left">
                     <MdOutlineLogout className="text-blue-600" size={20} />
                     <span>Logout</span>
                   </button>
@@ -243,24 +243,47 @@ const Header = () => {
       </div>
 
       {/* Mobile Menu */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={{ x: "-100%", opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: "-100%", opacity: 0 }}
-            transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="fixed top-0 left-0 w-3/4 h-full bg-white shadow-lg z-50 p-6 space-y-6"
+     <AnimatePresence>
+  {menuOpen && (
+    <motion.div
+      initial={{ x: "-100%", opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: "-100%", opacity: 0 }}
+      transition={{ duration: 0.4, ease: "easeInOut" }}
+      className="fixed top-0 left-0 w-3/4 h-full bg-white shadow-lg z-50 p-6 space-y-6"
+    >
+      <Link to="/" className="block text-lg font-medium text-black hover:text-gray-600" onClick={() => setMenuOpen(false)}>Home</Link>
+      <Link to="/about" className="block text-lg font-medium text-black hover:text-gray-600" onClick={() => setMenuOpen(false)}>About</Link>
+      <Link to="/contact" className="block text-lg font-medium text-black hover:text-gray-600" onClick={() => setMenuOpen(false)}>Contact</Link>
+
+      {/* Conditional Rendering for Login/Profile */}
+      {!profile?.name ? (
+        <Link to="/signup" className="block text-lg font-medium text-black hover:text-gray-600" onClick={() => setMenuOpen(false)}>
+          Sign Up / Login
+        </Link>
+      ) : (
+        <div className="flex flex-col gap-2">
+          <Link to="/editprofile" className="block text-lg font-medium text-black hover:text-gray-600" onClick={() => setMenuOpen(false)}>
+            My Profile
+          </Link>
+          <Link to="/orderhistory" className="block text-lg font-medium text-black hover:text-gray-600" onClick={() => setMenuOpen(false)}>
+            Orders
+          </Link>
+          <Link to="/wishlist" className="block text-lg font-medium text-black hover:text-gray-600" onClick={() => setMenuOpen(false)}>
+            Wishlist
+          </Link>
+          <button
+            onClick={() => { logout(); setMenuOpen(false); }}
+            className="text-left block text-lg font-medium text-black hover:text-gray-600"
           >
-            <Link to="/" className="block text-lg font-medium text-black hover:text-gray-600" onClick={() => setMenuOpen(false)}>Home</Link>
-            <Link to="/about" className="block text-lg font-medium text-black hover:text-gray-600" onClick={() => setMenuOpen(false)}>About</Link>
-            <Link to="/contact" className="block text-lg font-medium text-black hover:text-gray-600" onClick={() => setMenuOpen(false)}>Contact</Link>
-            {!profile?.name && (
-              <Link to="/signup" className="block text-lg font-medium text-black hover:text-gray-600" onClick={() => setMenuOpen(false)}>Sign Up</Link>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+            Logout
+          </button>
+        </div>
+      )}
+    </motion.div>
+  )}
+</AnimatePresence>
+
     </header>
   );
 };

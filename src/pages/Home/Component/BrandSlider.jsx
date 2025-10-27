@@ -22,7 +22,7 @@ export default function BrandSlider() {
         <div className="w-full py-10 bg-purple-50">
             <Swiper
                 spaceBetween={20}
-                loop={true}
+                loop={brands.length > 6}
                 autoplay={{
                     delay: 0,
                     disableOnInteraction: false,
@@ -31,10 +31,10 @@ export default function BrandSlider() {
                 speed={2000}
                 modules={[Autoplay]}
                 breakpoints={{
-                    320: { slidesPerView: 4 },  
-                    640: { slidesPerView: 4 },  
-                    1024: { slidesPerView: 6 },  
-                    1280: { slidesPerView: 6 },  
+                    320: { slidesPerView: Math.min(3, brands.length) },  
+                    640: { slidesPerView: Math.min(4, brands.length) },  
+                    1024: { slidesPerView: Math.min(5, brands.length) },  
+                    1280: { slidesPerView: Math.min(6, brands.length) },  
                 }}
                 className="mySwiper"
             >

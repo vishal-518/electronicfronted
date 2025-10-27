@@ -32,7 +32,7 @@ export default function ProductPage() {
             oldPrice: 160,
             discount: "-40%",
             rating: 88,
-            img: "/red-gamepad.png",
+            img: "https://via.placeholder.com/200x150/ff0000/ffffff?text=Red+Gamepad",
         },
         {
             id: 2,
@@ -41,7 +41,7 @@ export default function ProductPage() {
             oldPrice: 1160,
             discount: "-35%",
             rating: 75,
-            img: "/keyboard.png",
+            img: "https://via.placeholder.com/200x150/000000/ffffff?text=Keyboard",
         },
         {
             id: 3,
@@ -50,7 +50,7 @@ export default function ProductPage() {
             oldPrice: 400,
             discount: "-30%",
             rating: 99,
-            img: "/monitor.png",
+            img: "https://via.placeholder.com/200x150/0000ff/ffffff?text=Monitor",
         },
         {
             id: 4,
@@ -58,11 +58,11 @@ export default function ProductPage() {
             price: 160,
             oldPrice: 170,
             rating: 65,
-            img: "/cooler.png",
+            img: "https://via.placeholder.com/200x150/00ff00/ffffff?text=CPU+Cooler",
         },
     ];
 
-   const handleAddToCart = (product) => {
+    const handleAddToCart = (product) => {
         const token = localStorage.getItem('token');
 
         // axios.get(`https://electronicbackend-bzcr.onrender.com/product/${product._id}`, { headers: { Authorization: token ? `Bearer ${token}` : "" } })
@@ -92,7 +92,7 @@ export default function ProductPage() {
             });
 
 
-       
+
 
     };
 
@@ -176,6 +176,13 @@ export default function ProductPage() {
                             <strong className="font-bold">Product Warranty: </strong>
                             {productdel?.product_warranty}
                         </p>
+                        <div className="mb-3">
+                            <p>
+                                <strong className="font-semibold">Delivery by</strong>{" "}
+                                {new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString()}
+                            </p>
+
+                        </div>
 
                         {/* Quantity & Buy Now */}
                         <div className="flex items-center gap-3 mb-6">
@@ -194,16 +201,7 @@ export default function ProductPage() {
 
                         </div>
 
-                        <div className="mb-3">
-                            <p>
-                                <strong className="font-semibold">Delivery by</strong>{" "}
-                                {new Date(
-                                    new Date(productdel?.createdAt).setDate(
-                                        new Date(productdel?.createdAt).getDate() + 5
-                                    )
-                                ).toLocaleDateString()}
-                            </p>
-                        </div>
+
 
                         {/* Delivery Info */}
                         {/* <div className="border rounded-md p-4 space-y-4">
