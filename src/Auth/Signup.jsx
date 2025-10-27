@@ -321,8 +321,8 @@ useEffect(() => {
               </button>
             </form>
 
-            {/* Google login button */}
-            {!isLogin && !otpSent && (
+            {/* Google login button - Temporarily disabled */}
+            {/* {!isLogin && !otpSent && (
               <div className="mt-4">
                 <p className="text-center text-gray-500 mb-2">or</p>
                 <GoogleLogin
@@ -330,7 +330,7 @@ useEffect(() => {
                   onError={() => console.log('Login Failed')}
                 />
               </div>
-            )}
+            )} */}
 
             {!otpSent && (
               <p className="mt-6 text-center text-gray-600">

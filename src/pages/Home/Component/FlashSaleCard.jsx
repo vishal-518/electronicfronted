@@ -132,7 +132,7 @@ export default function FlashSalesPage() {
                 spaceBetween={20}
                 autoplay={{ delay: 3000, disableOnInteraction: false }}
                 breakpoints={{ 320: { slidesPerView: 1 }, 640: { slidesPerView: 2 }, 768: { slidesPerView: 3 }, 1024: { slidesPerView: 4 } }}
-                loop
+                loop={productapi.length > 4}
             >
                 {productapi.map((product) => (
                     <SwiperSlide key={product._id}>
