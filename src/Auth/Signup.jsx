@@ -146,12 +146,7 @@ export default function Signup() {
             guestToken,
           });
 
-          if (mergeRes.data.cart) {
-            setCartData(mergeRes.data.cart.map((item) => ({
-              ...item,
-              quantity: item.quantity || 1,
-            })));
-          }
+          // Cart data will be handled by the backend
         }
 
         if (data.exitsuser.role === "admin") {

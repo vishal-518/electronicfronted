@@ -24,7 +24,7 @@ const Slider = () => {
         pagination={{ clickable: true }}
         modules={[Pagination, Autoplay]}
         autoplay={{ delay: 3000 }}
-        loop={true}
+        loop={slides.length > 1}
         className="w-full h-full"
       >
         {slides.map((slide, index) => (
